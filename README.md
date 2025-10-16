@@ -71,3 +71,5 @@ export default defineConfig([
   },
 ])
 ```
+# AI Life Dashboard
+Smart day planner built with React, TypeScript, MUI and AI.
