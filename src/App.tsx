@@ -1,58 +1,51 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
+import { useState, useEffect } from 'react';
+import { DashboardPage } from './components/dashboard/DashboardPage';
+import { PlanInputForm } from './components/forms/PlanInputForm';
+import { ChatPage } from './components/chat/ChatPage';
+import { AnalyticsPage } from './components/analytics/AnalyticsPage';
 
-// function App() {
-//   const [count, setCount] = useState(0)
+type Page = 'dashboard' | 'input' | 'chat' | 'analytics';
 
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
+export default function App() {
+  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const [userId, setUserId] = useState<string>('');
 
-// export default App
-import React from "react";
-import { Container, Box, AppBar, Toolbar, Typography } from "@mui/material";
-import DashboardPage from "./pages/DashboardPage";
+  useEffect(() => {
+    // Generate or retrieve user ID
+    let storedUserId = localStorage.getItem('aiLifeDashboardUserId');
+    if (!storedUserId) {
+      storedUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('aiLifeDashboardUserId', storedUserId);
+    }
+    setUserId(storedUserId);
+  }, []);
 
-function App() {
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page as Page);
+  };
+
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">AI Life Dashboard</Typography>
-        </Toolbar>
-      </AppBar>
-
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Box>
-          <DashboardPage />
-        </Box>
-      </Container>
+      {currentPage === 'dashboard' && (
+        <DashboardPage onNavigate={handleNavigate} userId={userId} />
+      )}
+      {currentPage === 'input' && (
+        <PlanInputForm onNavigate={handleNavigate} userId={userId} />
+      )}
+      {currentPage === 'chat' && (
+        <ChatPage onNavigate={handleNavigate} userId={userId} />
+      )}
+      {currentPage === 'analytics' && (
+        <AnalyticsPage onNavigate={handleNavigate} userId={userId} />
+      )}
     </>
   );
 }
-
-export default App;
